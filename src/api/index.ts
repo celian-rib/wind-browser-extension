@@ -1,7 +1,9 @@
+import { HibouAPI, OpenWeatherAPI } from "./api";
+
 const HIBOU_API_URL = 'https://api.lehibou.com/api/reference';
 const OPEN_WEATHER_API_URL = 'https://api.openweathermap.org/data/2.5';
 
-async function postCitySearch(search) {
+async function postCitySearch(search: string): Promise<HibouAPI.CitySearchResponse> {
   const response = await fetch(`${HIBOU_API_URL}/address/city/list`, {
     method: 'POST',
     headers: {
@@ -13,10 +15,10 @@ async function postCitySearch(search) {
   return response.json();
 }
 
-async function getWeatherForecast(lat, lon) {
+async function getWeatherForecast(geolocation: HibouAPI.Geolocation): Promise<OpenWeatherAPI.WeatherForecast> {
   const urlParams = new URLSearchParams({
-    lat,
-    lon,
+    lat: `${geolocation.lat}`,
+    lon: `${geolocation.lon}`,
     appid: process.env.VUE_APP_OPEN_WEATHER_API_KEY,
   });
 

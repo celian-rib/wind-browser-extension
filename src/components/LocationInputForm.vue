@@ -6,7 +6,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: "LocationInputForm",
   data: () => ({
@@ -20,7 +20,6 @@ export default {
   },
   methods: {
     onClickSearch() {
-      console.log("onClickSearch", this.textInput);
       if (!this.textInput) return;
       this.onSearch(this.textInput);
     },

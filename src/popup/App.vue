@@ -3,28 +3,33 @@
   <p v-else>{{ currentCityData?.cityInfos.title ?? "loading..." }}</p>
 </template>
 
-<script>
+<script lang="ts">
 import LocationInputForm from "@/components/LocationInputForm.vue";
 import API from "@/api";
+import { HibouAPI, OpenWeatherAPI } from '@/api/api';
+
+type CityData = {
+  weatherForecastItems: OpenWeatherAPI.WeatherForecastItem[];
+  cityInfos: HibouAPI.CitySearchItem;
+};
 
 export default {
   name: "App",
   data: () => ({
-    currentCityData: null,
+    currentCityData: null as null | CityData,
   }),
   methods: {
-    async onSearch(city) {
+    async onSearch(city: string) {
       try {
         const citySearchResult = await API.postCitySearch(city);
         if (citySearchResult?.items?.length < 1) throw new Error("No city found");
   
         const cityData = citySearchResult.items[0];
-        const { lat, lon } = cityData.geolocation;
-        if (!lat || !lon) throw new Error("No city found");
+        if (cityData?.geolocation == null) throw new Error("No city found");
   
-        const weatherData = await API.getWeatherForecast(lat, lon);
+        const weatherData = await API.getWeatherForecast(cityData.geolocation);
         this.currentCityData = {
-          weatherForecast: weatherData.list,
+          weatherForecastItems: weatherData.list,
           cityInfos: cityData
         };
       } catch (error) {
