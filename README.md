@@ -1,24 +1,13 @@
 # wind-extension
 
 ## Project setup
-```
-npm install
-```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+TODO
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## Environement variables
 
-### Lints and fixes files
-```
-npm run lint
-```
+`.env` file
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+```
+OPEN_WEATHER_API_KEY=<api key>
+```
