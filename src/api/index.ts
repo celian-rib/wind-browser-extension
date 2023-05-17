@@ -1,4 +1,4 @@
-import { HibouAPI, OpenWeatherAPI } from "./api";
+import { HibouAPI, OpenWeatherAPI } from "./types";
 
 const HIBOU_API_URL = 'https://api.lehibou.com/api/reference';
 const OPEN_WEATHER_API_URL = 'https://api.openweathermap.org/data/2.5';
@@ -19,6 +19,7 @@ async function getWeatherForecast(geolocation: HibouAPI.Geolocation): Promise<Op
   const urlParams = new URLSearchParams({
     lat: `${geolocation.lat}`,
     lon: `${geolocation.lon}`,
+    units: 'metric',
     appid: process.env.VUE_APP_OPEN_WEATHER_API_KEY,
   });
 

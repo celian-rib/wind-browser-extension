@@ -1,17 +1,12 @@
 <template>
   <location-input-form v-if="currentCityData == null" :onSearch="onSearch" />
-  <p v-else>{{ currentCityData?.cityInfos.title ?? "loading..." }}</p>
+  <weather-view v-else :cityData="currentCityData" :closeView="clearSearch" />
 </template>
 
 <script lang="ts">
 import LocationInputForm from "@/components/LocationInputForm.vue";
 import API from "@/api";
-import { HibouAPI, OpenWeatherAPI } from '@/api/api';
-
-type CityData = {
-  weatherForecastItems: OpenWeatherAPI.WeatherForecastItem[];
-  cityInfos: HibouAPI.CitySearchItem;
-};
+import WeatherView, { CityData } from '@/components/WeatherView.vue';
 
 export default {
   name: "App",
@@ -37,9 +32,13 @@ export default {
         this.currentCityData = null;
       }
     },
+    clearSearch() {
+      this.currentCityData = null;
+    }
   },
   components: {
     LocationInputForm,
+    WeatherView
   },
 };
 </script>
