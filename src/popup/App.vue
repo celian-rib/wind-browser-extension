@@ -10,6 +10,9 @@
       :cityData="currentCityData"
       :closeView="clearSearch"
     />
+    <div v-if="error != null" class="errorContainer">
+      <p>{{ error }}</p>
+    </div>
   </div>
 </template>
 
@@ -27,60 +30,50 @@ export default defineComponent({
     return {
       currentCityData: null as null | CityData,
       loading: false,
+      error: null as null | string,
     };
   },
   async beforeMount() {
     const lastCityData: HibouAPI.CitySearchItem | null = await getStorage(
       "lastCityData"
     );
-    console.log("lastCityData", lastCityData);
     if (lastCityData == null) return;
-    console.log("Loaded city data from storage");
-    this.loadWeatherData(lastCityData);
+    await this.loadWeatherData(lastCityData);
   },
   methods: {
     async loadWeatherData(cityData: HibouAPI.CitySearchItem) {
-      // /////// REMOVE //////
-      // const storedWeatherData: OpenWeatherAPI.WeatherForecast | null =
-      //   await getStorage("lastWeatherData");
-      // if (storedWeatherData != null) {
-      //   console.log("Loaded weather data from storage");
-      //   this.currentCityData = {
-      //     weatherForecastItems: storedWeatherData.list,
-      //     cityInfos: cityData,
-      //   };
-      //   return;
-      // }
-      // /////// REMOVE //////
+      try {
+        const weatherData = await API.getWeatherForecast(cityData.geolocation);
 
-      const weatherData = await API.getWeatherForecast(cityData.geolocation);
+        this.currentCityData = {
+          weatherForecastItems: weatherData.list,
+          cityInfos: cityData,
+        };
 
-      // /////// REMOVE //////
-      // console.log("Loaded weather data", weatherData);
-      // setStorage("lastWeatherData", weatherData);
-      // /////// REMOVE //////
-
-      this.currentCityData = {
-        weatherForecastItems: weatherData.list,
-        cityInfos: cityData,
-      };
-
-      setStorage("lastCityData", cityData);
+        setStorage("lastCityData", cityData);
+      } catch (error) {
+        console.error("Weather data error", error);
+        this.currentCityData = null;
+        this.error = "Error while loading weather data";
+      }
     },
     async onSearch(city: string) {
       try {
+        this.error = null;
         this.loading = true;
         const citySearchResult = await API.postCitySearch(city);
-        if (citySearchResult?.items?.length < 1)
-          throw new Error("No city found");
+        if (citySearchResult?.items?.length < 1) {
+          this.error = `No city found for ${city}`;
+          return;
+        }
 
         const cityData = citySearchResult.items[0];
-        if (cityData?.geolocation == null) throw new Error("No city found");
+        if (cityData?.geolocation == null) throw new Error("Missing geolocation");
 
         this.loadWeatherData(cityData);
       } catch (error) {
-        console.error("Search error", error);
         this.currentCityData = null;
+        this.error = "Error while loading city data";
       } finally {
         this.loading = false;
       }
@@ -129,5 +122,20 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.errorContainer {
+  width: 90%;
+  position: absolute;
+  bottom: 10px;
+  padding: 15px;
+  background-color: #ff4d4d;
+  border-radius: 15px;
+  color: white;
+}
+
+.errorContainer p {
+  margin: 0;
+  font-size: 0.9rem;
 }
 </style>
