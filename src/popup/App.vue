@@ -18,6 +18,8 @@ import { defineComponent } from "vue";
 import API from "@/api";
 import LocationInputForm from "@/popup/views/HomeView.vue";
 import WeatherView, { CityData } from "@/popup/views/WeatherView.vue";
+import { getStorage, setStorage, removeStorage } from "@/utils/storage";
+import { HibouAPI } from "@/api/types";
 
 export default defineComponent({
   name: "App",
@@ -27,7 +29,23 @@ export default defineComponent({
       loading: false,
     };
   },
+  async beforeMount() {
+    const lastCityData: HibouAPI.CitySearchItem | null = await getStorage("lastCityData");
+    if (lastCityData == null) return;
+    this.loadWeatherData(lastCityData);
+    console.log("Loaded city data from storage");
+  },
   methods: {
+    async loadWeatherData(cityData: HibouAPI.CitySearchItem) {
+      const weatherData = await API.getWeatherForecast(cityData.geolocation);
+
+      this.currentCityData = {
+        weatherForecastItems: weatherData.list,
+        cityInfos: cityData,
+      };
+
+      setStorage("lastCityData", cityData);
+    },
     async onSearch(city: string) {
       try {
         this.loading = true;
@@ -38,11 +56,7 @@ export default defineComponent({
         const cityData = citySearchResult.items[0];
         if (cityData?.geolocation == null) throw new Error("No city found");
 
-        const weatherData = await API.getWeatherForecast(cityData.geolocation);
-        this.currentCityData = {
-          weatherForecastItems: weatherData.list,
-          cityInfos: cityData,
-        };
+        this.loadWeatherData(cityData);
       } catch (error) {
         console.error("Search error", error);
         this.currentCityData = null;
@@ -52,6 +66,7 @@ export default defineComponent({
     },
     clearSearch() {
       this.currentCityData = null;
+      removeStorage("lastCityData");
     },
   },
   components: {
