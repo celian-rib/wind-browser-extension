@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "__MSG_extName__",
-  "homepage_url": "http://localhost:8080/",
-  "description": "A Vue Browser Extension",
+  "name": "Wind forecast | Ventibou",
+  "homepage_url": "https://github.com/celian-rib/wind-browser-extension",
+  "description": "Display wind forecast in your City!",
   "default_locale": "en",
   "permissions": [
     "storage",
@@ -10,16 +10,13 @@
     "*://*/*"
   ],
   "icons": {
-    "16": "icons/16.png",
-    "48": "icons/48.png",
-    "128": "icons/128.png"
+    "48": "icons/icon.png"
   },
   "browser_action": {
     "default_popup": "popup.html",
-    "default_title": "__MSG_extName__",
+    "default_title": "Wind forecast | Ventibou",
     "default_icon": {
-      "19": "icons/19.png",
-      "38": "icons/38.png"
+      "38": "icons/icon.png"
     }
   }
 }
