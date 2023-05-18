@@ -1,6 +1,6 @@
 <template>
   <div class="appContainer">
-    <location-input-form
+    <home-view
       :loading="true"
       :visible="currentCityData == null"
       :onSearch="onSearch"
@@ -17,9 +17,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
 import API from "@/api";
-import LocationInputForm from "@/popup/views/HomeView.vue";
+import { defineComponent } from "vue";
+import HomeView from "@/popup/views/HomeView.vue";
 import WeatherView, { CityData } from "@/popup/views/WeatherView.vue";
 import { getStorage, setStorage, removeStorage } from "@/utils/storage";
 import { HibouAPI } from "@/api/types";
@@ -84,7 +84,7 @@ export default defineComponent({
     },
   },
   components: {
-    LocationInputForm,
+    HomeView,
     WeatherView,
   },
 });
