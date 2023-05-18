@@ -6,19 +6,21 @@
     </div>
     <div class="inputContainer">
       <input type="text" placeholder="Search city ..." v-model="textInput" />
-      <button @click="onClickSearch">
-        Search
-      </button>
+      <button @click="onClickSearch">Search</button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-export default {
+import { defineComponent } from "vue";
+
+export default defineComponent({
   name: "HomeView",
-  data: () => ({
-    textInput: "",
-  }),
+  data() {
+    return {
+      textInput: "",
+    };
+  },
   props: {
     onSearch: {
       type: Function,
@@ -47,7 +49,7 @@ export default {
       this.onSearch(this.textInput);
     },
   },
-};
+});
 </script>
 
 <style scoped>

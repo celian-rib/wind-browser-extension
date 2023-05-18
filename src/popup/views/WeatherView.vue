@@ -4,7 +4,7 @@
       <div class="cityInfos">
         <h1>{{ lastCityData?.cityInfos.title }}</h1>
         <p>
-          <span>{{ currentWeather?.main.temp ?? -1 }}</span
+          <span>{{ currentTemp }}</span
           >˙C
         </p>
       </div>
@@ -33,6 +33,7 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from "vue";
 import { HibouAPI, OpenWeatherAPI } from "@/api/types";
 import { metersPerSecToKnotts } from "@/utils/conversion";
 import Waves from "@/components/Waves.vue";
@@ -42,12 +43,13 @@ export type CityData = {
   cityInfos: HibouAPI.CitySearchItem;
 };
 
-export default {
+export default defineComponent({
   name: "WeatherView",
-  data: () => ({
-    textInput: "",
-    lastCityData: null as null | CityData,
-  }),
+  data() {
+    return {
+      lastCityData: null as null | CityData,
+    };
+  },
   props: {
     visible: {
       type: Boolean,
@@ -86,6 +88,10 @@ export default {
     currentWeather() {
       return this.lastCityData?.weatherForecastItems[0];
     },
+    currentTemp() {
+      if (this.currentWeather == null) return -1;
+      return Math.round(this.currentWeather.main.temp);
+    },
     currentWindSpeed() {
       if (this.currentWeather == null) return -1;
       return metersPerSecToKnotts(this.currentWeather.wind.speed);
@@ -111,7 +117,7 @@ export default {
   components: {
     Waves,
   },
-};
+});
 </script>
 
 <style scoped>
@@ -140,6 +146,16 @@ header button {
   flex-direction: column;
 }
 
+.cityInfos h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.cityInfos p {
+  margin: 10px 0;
+  font-size: 1rem;
+}
+
 .cityInfos span {
   font-weight: bold;
 }
@@ -149,7 +165,7 @@ header button {
   top: 0;
   left: 0;
 
-  transition: transform 0.5s cubic-bezier(0.53, 0.74, 0.45, 1.11);
+  transition: transform 0.5s cubic-bezier(0.17, 0.67, 0.36, 1.04);
 
   width: var(--popup-width);
   height: var(--popup-height);
