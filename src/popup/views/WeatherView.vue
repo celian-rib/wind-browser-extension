@@ -17,28 +17,25 @@
     </header>
     <waves />
     <div class="contentContainer">
-      <div class="windArrowContainer">
-        <wind-arrow :windDirection="currentWindDirection" />
-        <p>{{ currentWindDirection }}˙</p>
+      <div class="currentWindInfosContainer" :style="contentStyle">
+        <div class="currentWindContainer">
+          <h2>{{ currentWindSpeed }}<span>knots</span></h2>
+          <div>
+            <gust-icon />
+            <p>{{ currentWindGust }}</p>
+          </div>
+        </div>
+
+        <div class="windArrowContainer">
+          <wind-arrow :size="25" :windDirection="currentWindDirection" />
+        </div>
       </div>
-      <div class="currentWindContainer">
-        <h2>{{ currentWindSpeed }} <span>Knots</span></h2>
-      </div>
-      <!-- <h1>Wind</h1>
-      <p>Temp:</p>
-      <p>Wind: {{ currentWindSpeed }}</p>
-      <p>Gust: {{ currentWindGust }}</p>
-      <button @click="closeView">Clear</button>
 
       <div class="forecastList">
         <div v-for="item in nextTwoDaysForecast" :key="item.dt_txt">
-          <p>{{ item.dt_txt }}</p>
-          <p>{{ item.main.temp }}C</p>
-          <p>{{ item.wind.speed }}</p>
-          <p>{{ item.wind.gust }}</p>
-          <p>{{ item.wind.deg }}</p>
+          <forecast-item :forecastData="item" />
         </div>
-      </div> -->
+      </div>
     </div>
   </div>
 </template>
@@ -51,6 +48,8 @@ import { metersPerSecToKnotts } from "@/utils/conversion";
 import Waves from "@/components/Waves.vue";
 import CloseButton from "@/components/CloseButton.vue";
 import WindArrow from "@/components/WindArrow.vue";
+import ForecastItem from "@/components/ForecastItem.vue";
+import GustIcon from "@/components/GustIcon.vue";
 
 export type CityData = {
   weatherForecastItems: OpenWeatherAPI.WeatherForecastItem[];
@@ -100,6 +99,13 @@ export default defineComponent({
         transition: this.visible ? "0.8s" : "0.5s",
       };
     },
+    contentStyle() {
+      return {
+        opacity: this.visible ? 1 : 0,
+        transform: this.visible ? "" : "scale(0.5)",
+        transition: "1.2s"
+      };
+    },
     currentWeather() {
       return this.lastCityData?.weatherForecastItems[0];
     },
@@ -113,7 +119,7 @@ export default defineComponent({
     },
     currentWindGust() {
       if (this.currentWeather == null) return -1;
-      return metersPerSecToKnotts(this.currentWeather.wind.gust);
+      return Math.round(metersPerSecToKnotts(this.currentWeather.wind.gust));
     },
     currentWindDirection() {
       if (this.currentWeather == null) return -1;
@@ -129,15 +135,16 @@ export default defineComponent({
       return this.lastCityData.weatherForecastItems.filter((item, index) => {
         const date = new Date(item.dt * 1000);
         const hour = date.getHours();
-        return index < 16 && hour >= 6 && hour <= 21;
+        return index < 26 && hour >= 6 && hour <= 21;
       });
     },
   },
-  methods: {},
   components: {
     Waves,
     CloseButton,
     WindArrow,
+    ForecastItem,
+    GustIcon,
   },
 });
 </script>
@@ -209,40 +216,69 @@ header button:hover {
 }
 
 .contentContainer {
-  min-height: var(--popup-height);
+  height: calc(var(--popup-height) - 30%);
 
   margin-top: -5px;
   background-color: white;
 
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   align-items: center;
 }
 
+.currentWindInfosContainer {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
 .windArrowContainer {
+  margin-top: 15px;
   display: flex;
   flex-direction: column;
   align-items: center;
   color: var(--color-dark-grey);
 }
 
-.windArrowContainer p {
-  font-weight: bold;
-  font-size: 1rem;
-}
-
 .currentWindContainer {
   color: var(--color-dark-grey);
-  font-size: 1.5rem;
+  font-size: 2rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.currentWindContainer > div {
+  display: flex;
+  align-items: center;
+}
+
+.currentWindContainer h2 {
+  margin: 0;
 }
 
 .currentWindContainer span {
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 400;
+  opacity: 0.7;
+  margin-left: 5px;
+}
+
+.currentWindContainer p {
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin: 0;
+  margin-left: 8px;
 }
 
 .forecastList {
+  width: calc(100% - 20px);
+  padding: 30px 10px;
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  overflow-x: scroll;
 }
 </style>

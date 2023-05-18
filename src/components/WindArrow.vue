@@ -1,8 +1,8 @@
 <template>
   <div :style="containerStyle">
     <svg
-      width="38"
-      height="55"
+      :width="size"
+      :height="size"
       viewBox="0 0 38 55"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -26,11 +26,17 @@ export default defineComponent({
       type: Number,
       required: true,
     },
+    size: {
+      type: Number,
+      default: 38,
+    },
   },
   computed: {
     containerStyle() {
       if (this.windDirection == null) return {};
       return {
+        width: `${this.size}px`,
+        height: `${this.size}px`,
         transform: `rotate(${this.windDirection}deg)`,
       };
     },

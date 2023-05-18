@@ -30,14 +30,35 @@ export default defineComponent({
     };
   },
   async beforeMount() {
-    const lastCityData: HibouAPI.CitySearchItem | null = await getStorage("lastCityData");
+    const lastCityData: HibouAPI.CitySearchItem | null = await getStorage(
+      "lastCityData"
+    );
+    console.log("lastCityData", lastCityData);
     if (lastCityData == null) return;
-    this.loadWeatherData(lastCityData);
     console.log("Loaded city data from storage");
+    this.loadWeatherData(lastCityData);
   },
   methods: {
     async loadWeatherData(cityData: HibouAPI.CitySearchItem) {
+      // /////// REMOVE //////
+      // const storedWeatherData: OpenWeatherAPI.WeatherForecast | null =
+      //   await getStorage("lastWeatherData");
+      // if (storedWeatherData != null) {
+      //   console.log("Loaded weather data from storage");
+      //   this.currentCityData = {
+      //     weatherForecastItems: storedWeatherData.list,
+      //     cityInfos: cityData,
+      //   };
+      //   return;
+      // }
+      // /////// REMOVE //////
+
       const weatherData = await API.getWeatherForecast(cityData.geolocation);
+
+      // /////// REMOVE //////
+      // console.log("Loaded weather data", weatherData);
+      // setStorage("lastWeatherData", weatherData);
+      // /////// REMOVE //////
 
       this.currentCityData = {
         weatherForecastItems: weatherData.list,
