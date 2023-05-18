@@ -1,10 +1,6 @@
 <template>
   <div class="appContainer">
-    <home-view
-      :loading="true"
-      :visible="currentCityData == null"
-      :onSearch="onSearch"
-    />
+    <home-view :visible="currentCityData == null" :onSearch="onSearch" />
     <weather-view
       :visible="currentCityData != null"
       :cityData="currentCityData"
@@ -29,7 +25,6 @@ export default defineComponent({
   data() {
     return {
       currentCityData: null as null | CityData,
-      loading: false,
       error: null as null | string,
     };
   },
@@ -60,7 +55,6 @@ export default defineComponent({
     async onSearch(city: string) {
       try {
         this.error = null;
-        this.loading = true;
         const citySearchResult = await API.postCitySearch(city);
         if (citySearchResult?.items?.length < 1) {
           this.error = `No city found for ${city}`;
@@ -68,14 +62,13 @@ export default defineComponent({
         }
 
         const cityData = citySearchResult.items[0];
-        if (cityData?.geolocation == null) throw new Error("Missing geolocation");
+        if (cityData?.geolocation == null)
+          throw new Error("Missing geolocation");
 
         this.loadWeatherData(cityData);
       } catch (error) {
         this.currentCityData = null;
         this.error = "Error while loading city data";
-      } finally {
-        this.loading = false;
       }
     },
     clearSearch() {
