@@ -1,6 +1,12 @@
 # Wind forecast chrome extension (Ventibou)
 > By Celian Riboulet | [Le hibou](https://www.lehibou.com/) recruitment process.
 
+
+
+https://github.com/celian-rib/wind-browser-extension/assets/38594012/f9755705-cfdf-4c3c-9620-9a588515836d
+
+
+
 ## Setup & Run
 
 0. Setup env
